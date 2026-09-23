@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>39goods - 虚拟歌手周边商城</title>
+<style>
+    :root{
+        --teal:#20c997;
+        --teal-dark:#12a085;
+        --black:#111111;
+        --white:#ffffff;
+        --magenta:#d63384;
+        --gray:#f4f6f8;
+        --border:#e6e8eb;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;}
+    body{background:var(--gray);color:var(--black);}
+
+    header{
+        background:linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+        padding:14px 40px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        flex-wrap:wrap;
+        gap:12px;
+        box-shadow:0 2px 10px rgba(0,0,0,.08);
+    }
+    .logo{
+        font-size:28px;
+        font-weight:800;
+        color:var(--white);
+        letter-spacing:1px;
+    }
+    .logo span{color:#ffe0f0;}
+
+    .header-right{display:flex;gap:14px;align-items:center;flex-wrap:wrap;}
+
+    .search-bar{display:flex;}
+    .search-bar input{
+        width:340px;
+        padding:10px 14px;
+        border:none;
+        border-radius:24px 0 0 24px;
+        outline:none;
+        font-size:14px;
+    }
+    .search-bar button{
+        padding:10px 18px;
+        background:var(--magenta);
+        color:white;
+        border:none;
+        border-radius:0 24px 24px 0;
+        cursor:pointer;
+        font-weight:600;
+    }
+    .search-bar button:hover{opacity:.92;}
+
+    select{
+        padding:9px 12px;
+        border-radius:8px;
+        border:1px solid rgba(255,255,255,.6);
+        background:rgba(255,255,255,.95);
+        cursor:pointer;
+    }
+
+    nav{
+        background:var(--white);
+        padding:12px 40px;
+        border-bottom:1px solid var(--border);
+        display:flex;
+        gap:22px;
+        flex-wrap:wrap;
+    }
+    nav a{
+        text-decoration:none;
+        color:#333;
+        font-weight:600;
+        cursor:pointer;
+        padding:6px 10px;
+        border-radius:6px;
+    }
+    nav a:hover{background:var(--teal);color:white;}
+    nav a.active{background:var(--teal);color:white;}
+
+    .container{max-width:1300px;margin:24px auto;padding:0 20px;}
+
+    .page{display:none;animation:fadeIn .25s ease;}
+    .page.active{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+    .banner{
+        width:100%;
+        height:220px;
+        background:linear-gradient(120deg,#111 0%,#20c997 45%,#d63384 100%);
+        border-radius:14px;
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:0 40px;
+        color:white;
+        margin-bottom:24px;
+        overflow:hidden;
+        position:relative;
+    }
+    .banner::after{
+        content:"";
+        position:absolute;
+        right:-40px;top:-40px;
+        width:260px;height:260px;
+        background:rgba(255,255,255,.08);
+        border-radius:50%;
+    }
+    .banner h1{font-size:30px;margin-bottom:8px;}
+    .banner p{opacity:.9;}
+
+    .section-title{
+        font-size:20px;
+        margin:22px 0 14px;
+        display:flex;
+        align-items:center;
+        gap:10px;
+    }
+    .section-title::before{
+        content:"";
+        width:5px;height:22px;
+        background:var(--teal);
+        border-radius:3px;
+    }
+
+    .goods-grid{
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+        gap:22px;
+    }
+
+    .goods-card{
+        background:var(--white);
+        border-radius:12px;
+        overflow:hidden;
+        position:relative;
+        box-shadow:0 2px 10px rgba(0,0,0,.06);
+        cursor:pointer;
+        transition:.25s;
+        border:1px solid var(--border);
+    }
+    .goods-card:hover{
+        transform:translateY(-4px);
+        box-shadow:0 10px 24px rgba(32,201,151,.2);
+        border-color:var(--teal);
+    }
+    .goods-card img{
+        width:100%;
+        height:210px;
+        object-fit:cover;
+        background:#f0f2f5;
+    }
+    .goods-info{padding:14px;}
+    .goods-name{
+        font-size:14px;
+        margin-bottom:8px;
+        line-height:1.4;
+        height:40px;
+        overflow:hidden;
+        color:#222;
+    }
+    .goods-price{
+        color:var(--magenta);
+        font-weight:800;
+        font-size:18px;
+    }
+    .goods-tag{
+        display:inline-block;
+        margin-top:8px;
+        padding:3px 8px;
+        background:#ecfcf7;
+        color:var(--teal-dark);
+        border-radius:10px;
+        font-size:12px;
+        font-weight:600;
+    }
+
+    .hover-tip{
+        position:absolute;
+        left:0;top:0;
+        width:100%;height:100%;
+        background:rgba(0,0,0,.78);
+        color:white;
+        padding:14px;
+        opacity:0;
+        transition:.25s;
+        pointer-events:none;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+    }
+    .goods-card:hover .hover-tip{opacity:1;}
+    .hover-tip h4{margin-bottom:6px;color:#ffe0f0;}
+    .hover-tip p{font-size:13px;line-height:1.5;}
+
+    .detail-wrap{
+        background:var(--white);
+        padding:30px;
+        border-radius:14px;
+        display:flex;
+        gap:30px;
+        flex-wrap:wrap;
+        border:1px solid var(--border);
+    }
+    .detail-img{
+        width:420px;
+        height:420px;
+        object-fit:cover;
+        border-radius:12px;
+        background:#f0f2f5;
+        border:1px solid var(--border);
+    }
+    .detail-text{flex:1;min-width:300px;}
+    .detail-text h2{margin-bottom:12px;color:var(--black);}
+    .detail-row{margin:10px 0;line-height:1.8;font-size:15px;}
+    .detail-row strong{color:var(--magenta);}
+    .detail-price{font-size:26px;color:var(--magenta);font-weight:800;margin:14px 0;}
+
+    .btn{
+        padding:12px 26px;
+        border:none;
+        border-radius:10px;
+        cursor:pointer;
+        font-size:16px;
+        font-weight:700;
+        margin-right:12px;
+        margin-top:16px;
+        transition:.2s;
+    }
+    .btn-buy{background:var(--magenta);color:white;}
+    .btn-buy:hover{opacity:.9;}
+    .btn-cart{background:var(--teal);color:white;}
+    .btn-cart:hover{opacity:.9;}
+    .btn-back{background:#eef1f4;color:#333;}
+    .btn-outline{background:#fff;border:1px solid var(--teal);color:var(--teal);}
+
+    .pay-box,.log-box,.cart-box,.collect-box,.user-box,.review-box{
+        background:var(--white);
+        padding:30px;
+        border-radius:14px;
+        border:1px solid var(--border);
+    }
+    .pay-box{max-width:720px;margin:0 auto;}
+    .log-box,.cart-box,.collect-box,.user-box{max-width:900px;margin:0 auto;}
+
+    .pay-item{
+        padding:14px 16px;
+        border:1px solid var(--border);
+        border-radius:10px;
+        margin:10px 0;
+        cursor:pointer;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+    .pay-item:hover{border-color:var(--teal);}
+    .pay-item.active{border-color:var(--teal);background:#ecfcf7;}
+
+    .log-step{
+        border-left:3px solid var(--teal);
+        padding-left:22px;
+        margin:22px 0;
+        position:relative;
+    }
+    .log-step::before{
+        content:"";
+        width:14px;height:14px;
+        background:var(--teal);
+        border-radius:50%;
+        position:absolute;
+        left:-8px;top:4px;
+        box-shadow:0 0 0 4px rgba(32,201,151,.2);
+    }
+    .log-step b{color:var(--teal-dark);}
+
+    /* 购物车样式 */
+    .cart-item{
+        display:flex;
+        gap:16px;
+        padding:16px 0;
+        border-bottom:1px solid var(--border);
+        align-items:center;
+        flex-wrap:wrap;
+    }
+    .cart-item img{width:80px;height:80px;border-radius:8px;object-fit:cover;}
+    .cart-info{flex:1;min-width:220px;}
+    .cart-qty{display:flex;gap:8px;align-items:center;}
+    .cart-qty button{width:30px;height:30px;border-radius:4px;border:1px solid var(--border);cursor:pointer;}
+    .cart-total{text-align:right;font-size:20px;font-weight:bold;margin-top:20px;color:var(--magenta);}
+
+    /* 评价模块 */
+    .review-item{padding:14px;border-bottom:1px solid var(--border);}
+    .review-name{font-weight:bold;}
+    .review-time{font-size:12px;color:#777;}
+    .review-form{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);}
+    .review-form textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;height:100px;margin:10px 0;}
+
+    /* 分页 */
+    .pagination{display:flex;gap:10px;margin:24px 0;justify-content:center;}
+    .pagination button{padding:8px 14px;border-radius:6px;border:1px solid var(--border);cursor:pointer;}
+    .pagination button.active{background:var(--teal);color:white;border-color:var(--teal);}
+
+    /* 用户中心 */
+    .user-row{padding:12px 0;border-bottom:1px solid var(--border);}
+    .order-item{padding:14px;border:1px solid var(--border);border-radius:10px;margin:12px 0;}
+
+    footer{
+        margin-top:70px;
+        background:var(--black);
+        color:white;
+        padding:30px;
+        text-align:center;
+    }
+    footer a{color:var(--teal);text-decoration:none;margin:0 8px;}
+
+    @media (max-width:768px){
+        header{padding:12px 16px;}
+        nav{padding:10px 16px;}
+        .search-bar input{width:180px;}
+        .detail-img{width:100%;height:300px;}
+        .banner{padding:0 20px;height:180px;}
+        .banner h1{font-size:22px;}
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">39<span>goods</span></div>
+    <div class="header-right">
+        <div class="search-bar">
+            <input id="searchInput" placeholder="搜索专辑、手办、毛绒、海报、亚克力..." type="text" />
+            <button onclick="searchGoods()">搜索</button>
+        </div>
+        <select id="langSelect">
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+            <option value="id">Bahasa Indonesia</option>
+        </select>
+        <select id="currencySelect">
+            <option value="CNY">CNY ¥</option>
+            <option value="USD">USD $</option>
+            <option value="JPY">JPY ¥</option>
+        </select>
+    </div>
+</header>
+
+<nav>
+    <a onclick="switchPage('home')" class="active" id="nav-home">首页</a>
+    <a onclick="filterCat('all')">全部商品</a>
+    <a onclick="filterCat('album')">音乐专辑</a>
+    <a onclick="filterCat('figure')">手办模型</a>
+    <a onclick="filterCat('plush')">毛绒玩偶</a>
+    <a onclick="filterCat('apparel')">服饰周边</a>
+    <a onclick="filterCat('acrylic')">亚克力周边</a>
+    <a onclick="filterCat('badge')">徽章吧唧</a>
+    <a onclick="filterCat('poster')">海报挂画</a>
+    <a onclick="filterCat('watch')">智能配件</a>
+    <a onclick="filterCat('gift')">礼盒套装</a>
+    <a onclick="switchPage('cart')">🛒购物车</a>
+    <a onclick="switchPage('collect')">❤️收藏</a>
+    <a onclick="switchPage('user')">👤用户中心</a>
+</nav>
+
+<div class="container">
+
+    <!-- 首页 -->
+    <div id="home" class="page active">
+        <div class="banner">
+            <div>
+                <h1>虚拟歌手周边祭</h1>
+                <p>专辑 · 手办 · 毛绒 · 亚克力 · 徽章 · 海报 全系列上新</p>
+            </div>
+            <div style="font-size:72px;font-weight:900;opacity:.12;">39</div>
+        </div>
+
+        <h2 class="section-title">精选商品</h2>
+        <div class="goods-grid" id="goodsList"></div>
+        <div class="pagination" id="pageBox"></div>
+    </div>
+
+    <!-- 商品详情页 -->
+    <div id="detail" class="page">
+        <div class="detail-wrap">
+            <img id="detailImg" class="detail-img" src="" alt="" />
+            <div class="detail-text">
+                <button class="btn btn-back" onclick="switchPage('home')">← 返回商品列表</button>
+                <h2 id="detailName"></h2>
+                <div class="goods-tag" id="detailCat"></div>
+                <div class="detail-price" id="detailPrice"></div>
+
+                <div class="detail-row"><strong>品牌：</strong><span id="detailBrand"></span></div>
+                <div class="detail-row"><strong>制造商：</strong><span id="detailMaker"></span></div>
+                <div class="detail-row"><strong>商品编号：</strong><span id="detailSku"></span></div>
+                <div class="detail-row"><strong>商品介绍：</strong><span id="detailDesc"></span></div>
+                <div class="detail-row"><strong>材质/规格：</strong><span id="detailSpec"></span></div>
+                <div class="detail-row"><strong>发货时间：</strong>下单后 1–3 个工作日内发货</div>
+                <div class="detail-row"><strong>预计到货：</strong>发货后 4–8 天</div>
+                <div class="detail-row"><strong>收货地址：</strong>河北省唐山市遵化市华明北路39号</div>
+
+                <button class="btn btn-buy" onclick="goPay()">立即购买</button>
+                <button class="btn btn-cart" onclick="addToCart()">加入购物车</button>
+                <button class="btn btn-outline" id="collectBtn" onclick="toggleCollect()">收藏商品</button>
+            </div>
+        </div>
+        <div class="review-box" style="margin-top:24px;">
+            <h3>商品评价</h3>
+            <div id="reviewList"></div>
+            <div class="review-form">
+                <h4>写下评价</h4>
+                <textarea id="reviewInput" placeholder="分享你的购买体验..."></textarea>
+                <button class="btn btn-cart" onclick="submitReview()">提交评价</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 购物车页面 -->
+    <div id="cart" class="page">
+        <div class="cart-box">
+            <h2>🛒 我的购物车</h2>
+            <div id="cartList"></div>
+            <div class="cart-total" id="cartTotal"></div>
+            <button class="btn btn-buy" onclick="cartToPay()">去结算</button>
+            <button class="btn btn-back" onclick="switchPage('home')">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 收藏页面 -->
+    <div id="collect" class="page">
+        <div class="collect-box">
+            <h2>❤️ 我的收藏</h2>
+            <div class="goods-grid" id="collectList"></div>
+            <button class="btn btn-back" onclick="switchPage('home')">返回首页</button>
+        </div>
+    </div>
+
+    <!-- 用户中心 -->
+    <div id="user" class="page">
+        <div class="user-box">
+            <h2>👤 用户中心</h2>
+            <div class="user-row"><strong>用户名：</strong>Guest39</div>
+            <div class="user-row"><strong>收货地址：</strong>河北省唐山市遵化市华明北路39号</div>
+            <div class="user-row"><strong>联系电话：</strong>139****3939</div>
+            <h3 style="margin-top:24px;">我的订单</h3>
+            <div id="orderList"></div>
+            <button class="btn btn-cart" onclick="switchPage('collect')">查看我的收藏</button>
+        </div>
+    </div>
+
+    <!-- 支付页面 -->
+    <div id="pay" class="page">
+        <div class="pay-box">
+            <h2>订单结算 · 支付网关</h2>
+            <div class="detail-row">商品：<span id="payName"></span></div>
+            <div class="detail-row">商品编号：<span id="paySku"></span></div>
+            <div class="detail-row">数量：<span id="payQty">1</span> 件</div>
+            <div class="detail-row">应付金额：<strong id="payPrice"></strong></div>
+
+            <p style="margin-top:18px;"><strong>选择支付方式：</strong></p>
+            <div class="pay-item active" onclick="selectPay(this)">
+                <span>💳 本地钱包支付</span>
+                <span>推荐</span>
+            </div>
+            <div class="pay-item" onclick="selectPay(this)">
+                <span>🏦 银行卡支付</span>
+                <span>Visa / Mastercard</span>
+            </div>
+            <div class="pay-item" onclick="selectPay(this)">
+                <span>📱 扫码支付</span>
+                <span>即时到账</span>
+            </div>
+            <div class="pay-item" onclick="selectPay(this)">
+                <span>💼 第三方支付</span>
+                <span>本地电子支付</span>
+            </div>
+
+            <button class="btn btn-buy" style="margin-top:20px;" onclick="goLog()">确认支付</button>
+            <button class="btn btn-back" onclick="switchPage('detail')">返回详情</button>
+        </div>
+    </div>
+
+    <!-- 物流追踪页面 -->
+    <div id="logistics" class="page">
+        <div class="log-box">
+            <h2>实时物流追踪</h2>
+            <div class="detail-row">订单号：<strong id="logOrderId">39G20260923001</strong></div>
+            <div class="detail-row">商品：<span id="logName"></span></div>
+            <div class="detail-row">当前状态：<strong style="color:var(--teal-dark);">运输中</strong></div>
+
+            <div class="log-step"><b>09-23 10:00</b> 订单已付款，商家准备发货</div>
+            <div class="log-step"><b>09-24 15:20</b> 商品已完成质检与包装</div>
+            <div class="log-step"><b>09-25 09:10</b> 快递已揽收，进入转运中心</div>
+            <div class="log-step"><b>09-26 18:40</b> 货物正在发往目的城市</div>
+            <div class="log-step"><b>09-28 07:30</b> 到达本地配送站，快递员派送中</div>
+            <div class="log-step"><b>预计 09-29</b> 送达收货地址：河北省唐山市遵化市华明北路39号</div>
+
+            <button class="btn btn-cart" onclick="switchPage('home')">返回首页</button>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    39goods © 2026 虚拟歌手周边商城 | 多语言 · 多币种 · 跨境支付演示 · 实时物流追踪
+</footer>
+
+<script>
+// 商品数据库：20 个虚构商品，使用 picsum 稳定图片，不会失效
+const goodsData = [
+    {
+        id:1, sku:"39G-A-001", cat:"album", catName:"音乐专辑",
+        name:"《Neon Frequency》官方实体专辑 CD",
+        priceCNY:228, priceUSD:32, priceJPY:4900,
+        brand:"EchoTone Records", maker:"EchoTone 唱片公司",
+        img:"https://picsum.photos/id/1/400/400",
+        desc:"虚拟歌手全新录音室专辑，收录 12 首电子流行曲目，附带歌词本与特典明信片。",
+        spec:"1 张 CD + 歌词本 + 明信片套装"
+    },
+    {
+        id:2, sku:"39G-A-002", cat:"album", catName:"音乐专辑",
+        name:"《Midnight Beat》限定黑胶唱片",
+        priceCNY:368, priceUSD:52, priceJPY:7900,
+        brand:"EchoTone Records", maker:"EchoTone 唱片公司",
+        img:"https://picsum.photos/id/2/400/400",
+        desc:"限量黑胶版本，青绿色半透明唱片，收录混音曲目与豪华印刷封套。",
+        spec:"12 寸黑胶 + 豪华封套 + 编号卡"
+    },
+    {
+        id:3, sku:"39G-F-001", cat:"figure", catName:"手办模型",
+        name:"虚拟歌手 1/7 未来舞台礼服手办",
+        priceCNY:1080, priceUSD:152, priceJPY:23200,
+        brand:"Star Craft", maker:"星创模型株式会社",
+        img:"https://picsum.photos/id/3/400/400",
+        desc:"高精细比例手办，舞台礼服采用渐变涂装，底座带荧光舞台效果。",
+        spec:"1/7 比例，约 24cm，PVC 与 ABS 材质"
+    },
+    {
+        id:4, sku:"39G-F-002", cat:"figure", catName:"手办模型",
+        name:"虚拟歌手 Q版机甲桌面手办",
+        priceCNY:328, priceUSD:46, priceJPY:7000,
+        brand:"Star Craft", maker:"星创模型株式会社",
+        img:"https://picsum.photos/id/4/400/400",
+        desc:"Q 版机甲主题桌面手办，附带可替换表情与小型展示台。",
+        spec:"约 11cm，PVC 材质，含替换脸配件"
+    },
+    {
+        id:5, sku:"39G-P-001", cat:"plush", catName:"毛绒玩偶",
+        name:"虚拟歌手 25cm 经典毛绒玩偶",
+        priceCNY:169, priceUSD:24, priceJPY:3600,
+        brand:"Soft Stage", maker:"Soft Stage 毛绒工坊",
+        img:"https://picsum.photos/id/5/400/400",
+        desc:"柔软亲肤面料，青绿色标志性双马尾，适合收藏与送礼。",
+        spec:"约 25cm，聚酯纤维"
+    },
+    {
+        id:6, sku:"39G-P-002", cat:"plush", catName:"毛绒玩偶",
+        name:"虚拟歌手 趴趴毛绒抱枕",
+        priceCNY:219, priceUSD:31, priceJPY:4700,
+        brand:"Soft Stage", maker:"Soft Stage 毛绒工坊",
+        img:"https://picsum.photos/id/6/400/400",
+        desc:"长条趴趴造型，可作为抱枕和靠垫，内置高弹性棉。",
+        spec:"约 45cm，柔软短绒面料"
+    },
+    {
+        id:7, sku:"39G-Ap-001", cat:"apparel", catName:"服饰周边",
+        name:"虚拟歌手 青绿色概念短袖 T恤",
+        priceCNY:139, priceUSD:20, priceJPY:2900,
+        brand:"Live Wear", maker:"Live Wear 服饰公司",
+        img:"https://picsum.photos/id/7/400/400",
+        desc:"宽松版型，正面电子波形印花，男女同款。",
+        spec:"100% 棉，S–XL 码可选"
+    },
+    {
+        id:8, sku:"39G-Ap-002", cat:"apparel", catName:"服饰周边",
+        name:"虚拟歌手 连帽卫衣",
+        priceCNY:269, priceUSD:38, priceJPY:5700,
+        brand:"Live Wear", maker:"Live Wear 服饰公司",
+        img:"https://picsum.photos/id/8/400/400",
+        desc:"黑绿撞色设计，胸前刺绣虚拟歌手符号，保暖舒适。",
+        spec:"棉混纺，带帽抽绳，M–XXL 码可选"
+    },
+    {
+        id:9, sku:"39G-Ac-001", cat:"acrylic", catName:"亚克力周边",
+        name:"虚拟歌手 双面亚克力立牌",
+        priceCNY:59, priceUSD:9, priceJPY:1250,
+        brand:"Clear Lab", maker:"Clear Lab 亚克力工坊",
+        img:"https://picsum.photos/id/9/400/400",
+        desc:"双面图案，高清印刷，带透明底座。",
+        spec:"约 15cm，亚克力材质"
+    },
+    {
+        id:10, sku:"39G-Ac-002", cat:"acrylic", catName:"亚克力周边",
+        name:"虚拟歌手 亚克力钥匙扣套装",
+        priceCNY:49, priceUSD:7, priceJPY:1050,
+        brand:"Clear Lab", maker:"Clear Lab 亚克力工坊",
+        img:"https://picsum.photos/id/10/400/400",
+        desc:"3 枚入钥匙扣，包含角色头像、签名与音符图案。",
+        spec:"亚克力 + 金属挂扣"
+    },
+    {
+        id:11, sku:"39G-B-001", cat:"badge", catName:"徽章吧唧",
+        name:"虚拟歌手 徽章盲盒套装",
+        priceCNY:79, priceUSD:12, priceJPY:1700,
+        brand:"Clear Lab", maker:"Clear Lab 亚克力工坊",
+        img:"https://picsum.photos/id/11/400/400",
+        desc:"随机 6 枚徽章，含隐藏款金属徽章。",
+        spec:"直径 58mm，马口铁材质"
+    },
+    {
+        id:12, sku:"39G-B-002", cat:"badge", catName:"徽章吧唧",
+        name:"虚拟歌手 舞台限定徽章组",
+        priceCNY:99, priceUSD:15, priceJPY:2100,
+        brand:"Clear Lab", maker:"Clear Lab 亚克力工坊",
+        img:"https://picsum.photos/id/12/400/400",
+        desc:"演唱会限定设计，4 枚徽章带收藏卡。",
+        spec:"4 枚徽章 + 收藏卡"
+    },
+    {
+        id:13, sku:"39G-Po-001", cat:"poster", catName:"海报挂画",
+        name:"虚拟歌手 霓虹舞台海报套装",
+        priceCNY:89, priceUSD:13, priceJPY:1900,
+        brand:"Print Wing", maker:"Print Wing 印刷公司",
+        img:"https://picsum.photos/id/13/400/400",
+        desc:"A3 海报 4 张套装，铜版纸印刷，带保护袋。",
+        spec:"A3 × 4 张，铜版纸"
+    },
+    {
+        id:14, sku:"39G-Po-002", cat:"poster", catName:"海报挂画",
+        name:"虚拟歌手 布艺挂画",
+        priceCNY:159, priceUSD:23, priceJPY:3400,
+        brand:"Print Wing", maker:"Print Wing 印刷公司",
+        img:"https://picsum.photos/id/14/400/400",
+        desc:"布艺卷轴挂画，适合房间与展示区装饰。",
+        spec:"60cm × 40cm，布艺材质"
+    },
+    {
+        id:15, sku:"39G-W-001", cat:"watch", catName:"智能配件",
+        name:"虚拟歌手 联名智能手表",
+        priceCNY:699, priceUSD:98, priceJPY:14900,
+        brand:"Beat Watch", maker:"Beat Watch 电子公司",
+        img:"https://picsum.photos/id/15/400/400",
+        desc:"青绿色表带，内置虚拟歌手主题表盘与节拍显示。",
+        spec:"1.4 英寸屏幕，磁吸充电，IP68 防水"
+    },
+    {
+        id:16, sku:"39G-W-002", cat:"watch", catName:"智能配件",
+        name:"虚拟歌手 运动手环",
+        priceCNY:299, priceUSD:42, priceJPY:6400,
+        brand:"Beat Watch", maker:"Beat Watch 电子公司",
+        img:"https://picsum.photos/id/16/400/400",
+        desc:"轻量运动手环，支持心率、步数和主题壁纸切换。",
+        spec:"硅胶表带，0.96 英寸屏幕"
+    },
+    {
+        id:17, sku:"39G-G-001", cat:"gift", catName:"礼盒套装",
+        name:"虚拟歌手 豪华周边礼盒",
+        priceCNY:599, priceUSD:84, priceJPY:12800,
+        brand:"Star Craft", maker:"星创模型株式会社",
+        img:"https://picsum.photos/id/17/400/400",
+        desc:"含手办、亚克力立牌、徽章、海报与收藏证书的限定礼盒。",
+        spec:"礼盒装，含 6 件周边"
+    },
+    {
+        id:18, sku:"39G-G-002", cat:"gift", catName:"礼盒套装",
+        name:"虚拟歌手 音乐主题礼盒",
+        priceCNY:429, priceUSD:60, priceJPY:9100,
+        brand:"EchoTone Records", maker:"EchoTone 唱片公司",
+        img:"https://picsum.photos/id/18/400/400",
+        desc:"CD、黑胶风格卡片、徽章、贴纸与限定编号卡组合。",
+        spec:"CD + 卡片 + 徽章 + 贴纸"
+    },
+    {
+        id:19, sku:"39G-Ac-003", cat:"acrylic", catName:"亚克力周边",
+        name:"虚拟歌手 亚克力场景立牌",
+        priceCNY:79, priceUSD:12, priceJPY:1700,
+        brand:"Clear Lab", maker:"Clear Lab 亚克力工坊",
+        img:"https://picsum.photos/id/19/400/400",
+        desc:"舞台灯光场景式立牌，层次丰富，适合桌面展示。",
+        spec:"约 18cm，多层亚克力组合"
+    },
+    {
+        id:20, sku:"39G-P-003", cat:"plush", catName:"毛绒玩偶",
+        name:"虚拟歌手 迷你毛绒挂件",
+        priceCNY:69, priceUSD:10, priceJPY:1480,
+        brand:"Soft Stage", maker:"Soft Stage 毛绒工坊",
+        img:"https://picsum.photos/id/20/400/400",
+        desc:"小巧毛绒挂件，可挂包或钥匙，造型可爱。",
+        spec:"约 10cm，带金属挂扣"
+    }
+];
+
+let currentGoods = null;
+let currency = "CNY";
+let currentPage = 1;
+const pageSize = 8;
+
+// 购物车：[{id, qty}]
+let cart = [];
+// 收藏：[id]
+let collectList = [];
+// 评价
+let reviewData = {};
+// 订单
+let orderList = [];
+
+// 初始化每条商品空评价数组
+goodsData.forEach(g=>reviewData[g.id] = [
+    {user:"MikuFan01",time:"2026-08-10",content:"做工精致，包装完好，很满意！"},
+    {user:"VocaloidLover",time:"2026-08-18",content:"实物和图片一致，推荐购买。"}
+]);
+
+// 页面切换
+function switchPage(pageId){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+
+    document.querySelectorAll('nav a').forEach(a=>a.classList.remove('active'));
+    if(pageId==='home') document.getElementById('nav-home').classList.add('active');
+
+    if(pageId==="cart") renderCart();
+    if(pageId==="collect") renderCollect();
+    if(pageId==="user") renderOrders();
+}
+
+// 获取当前币种价格
+function getPrice(item){
+    if(currency==="CNY") return `¥ ${item.priceCNY}`;
+    if(currency==="USD") return `$ ${item.priceUSD}`;
+    if(currency==="JPY") return `¥ ${item.priceJPY}`;
+}
+function getPriceNum(item){
+    if(currency==="CNY") return item.priceCNY;
+    if(currency==="USD") return item.priceUSD;
+    if(currency==="JPY") return item.priceJPY;
+}
+
+// 渲染商品列表（分页）
+function renderList(list=goodsData){
+    const wrap = document.getElementById('goodsList');
+    wrap.innerHTML = "";
+    const totalPage = Math.ceil(list.length / pageSize);
+    if(currentPage>totalPage) currentPage=totalPage||1;
+    const start = (currentPage-1)*pageSize;
+    const pageData = list.slice(start, start+pageSize);
+
+    if(list.length===0){
+        wrap.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#888;padding:40px;">没有找到相关商品</p>`;
+        document.getElementById("pageBox").innerHTML="";
+        return;
+    }
+
+    pageData.forEach(item=>{
+        const card = document.createElement('div');
+        card.className = "goods-card";
+        card.onclick = ()=>openDetail(item);
+        card.innerHTML = `
+            <img src="${item.img}" alt="${item.name}" />
+            <div class="goods-info">
+                <div class="goods-name">${item.name}</div>
+                <div class="goods-price">${getPrice(item)}</div>
+                <div class="goods-tag">${item.catName}</div>
+            </div>
+            <div class="hover-tip">
+                <h4>${item.name}</h4>
+                <p>${item.desc}</p>
+                <p style="margin-top:8px;color:#ffe0f0;font-weight:700;">${getPrice(item)}</p>
+            </div>
+        `;
+        wrap.appendChild(card);
+    });
+
+    // 渲染分页
+    const pageBox = document.getElementById("pageBox");
+    pageBox.innerHTML = "";
+    for(let i=1;i<=totalPage;i++){
+        const btn = document.createElement("button");
+        btn.innerText = i;
+        if(i===currentPage) btn.classList.add("active");
+        btn.onclick = ()=>{currentPage=i;renderList(list);}
+        pageBox.appendChild(btn);
+    }
+}
+
+// 分类筛选
+function filterCat(cat){
+    currentPage=1;
+    if(cat==="all"){
+        renderList(goodsData);
+    } else {
+        renderList(goodsData.filter(i=>i.cat===cat));
+    }
+    switchPage('home');
+}
+
+// 站内搜索
+function searchGoods(){
+    currentPage=1;
+    const kw = document.getElementById('searchInput').value.trim().toLowerCase();
+    if(!kw){
+        renderList(goodsData);
+        return;
+    }
+    const res = goodsData.filter(i=>
+        i.name.toLowerCase().includes(kw) ||
+        i.desc.toLowerCase().includes(kw) ||
+        i.brand.toLowerCase().includes(kw) ||
+        i.catName.toLowerCase().includes(kw)
+    );
+    renderList(res);
+    switchPage('home');
+}
+
+// 打开商品详情
+function openDetail(item){
+    currentGoods = item;
+    document.getElementById('detailImg').src = item.img;
+    document.getElementById('detailName').innerText = item.name;
+    document.getElementById('detailPrice').innerText = getPrice(item);
+    document.getElementById('detailBrand').innerText = item.brand;
+    document.getElementById('detailMaker').innerText = item.maker;
+    document.getElementById('detailSku').innerText = item.sku;
+    document.getElementById('detailDesc').innerText = item.desc;
+    document.getElementById('detailSpec').innerText = item.spec;
+    document.getElementById('detailCat').innerText = item.catName;
+
+    // 收藏按钮状态
+    const collected = collectList.includes(item.id);
+    document.getElementById("collectBtn").innerText = collected ? "❤️已收藏" : "收藏商品";
+
+    // 渲染评价
+    renderReview(item.id);
+    switchPage('detail');
+}
+
+// 收藏切换
+function toggleCollect(){
+    if(!currentGoods) return;
+    const id = currentGoods.id;
+    const idx = collectList.indexOf(id);
+    if(idx>=0){
+        collectList.splice(idx,1);
+        document.getElementById("collectBtn").innerText = "收藏商品";
+    }else{
+        collectList.push(id);
+        document.getElementById("collectBtn").innerText = "❤️已收藏";
+    }
+}
+
+// 渲染评价
+function renderReview(goodsId){
+    const rList = reviewData[goodsId];
+    const wrap = document.getElementById("reviewList");
+    wrap.innerHTML = "";
+    rList.forEach(r=>{
+        wrap.innerHTML += `
+        <div class="review-item">
+            <div class="review-name">${r.user}</div>
+            <div class="review-time">${r.time}</div>
+            <p>${r.content}</p>
+        </div>`;
+    })
+}
+// 提交评价
+function submitReview(){
+    const txt = document.getElementById("reviewInput").value.trim();
+    if(!txt){alert("请输入评价内容");return;}
+    const now = new Date();
+    const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    reviewData[currentGoods.id].push({user:"Guest39",time:timeStr,content:txt});
+    document.getElementById("reviewInput").value="";
+    renderReview(currentGoods.id);
+    alert("评价提交成功！");
+}
+
+// 加入购物车
+function addToCart(){
+    if(!currentGoods) return;
+    const exist = cart.find(x=>x.id===currentGoods.id);
+    if(exist) exist.qty +=1;
+    else cart.push({id:currentGoods.id, qty:1});
+    alert(`已加入购物车：${currentGoods.name}`);
+}
+
+// 渲染购物车
+function renderCart(){
+    const wrap = document.getElementById("cartList");
+    wrap.innerHTML="";
+    let total = 0;
+    if(cart.length===0){
+        wrap.innerHTML = "<p>购物车为空，快去挑选商品吧！</p>";
+        document.getElementById("cartTotal").innerText = "";
+        return;
+    }
+    cart.forEach(item=>{
+        const g = goodsData.find(x=>x.id===item.id);
+        const price = getPriceNum(g);
+        const sub = price * item.qty;
+        total += sub;
+        wrap.innerHTML += `
+        <div class="cart-item">
+            <img src="${g.img}">
+            <div class="cart-info">
+                <div><strong>${g.name}</strong></div>
+                <div>${getPrice(g)}</div>
+            </div>
+            <div class="cart-qty">
+                <button onclick="cartChange(${item.id},-1)">-</button>
+                <span>${item.qty}</span>
+                <button onclick="cartChange(${item.id},1)">+</button>
+            </div>
+            <div>小计：${currency==="CNY"?"¥":"$"}${sub}</div>
+            <button class="btn btn-back" onclick="cartDel(${item.id})">删除</button>
+        </div>`;
+    })
+    document.getElementById("cartTotal").innerText = `合计：${currency==="CNY"?"¥":"$"}${total}`;
+}
+function cartChange(id, delta){
+    const c = cart.find(x=>x.id===id);
+    if(!c) return;
+    c.qty += delta;
+    if(c.qty<=0) cartDel(id);
+    else renderCart();
+}
+function cartDel(id){
+    cart = cart.filter(x=>x.id!==id);
+    renderCart();
+}
+
+// 渲染收藏页
+function renderCollect(){
+    const wrap = document.getElementById("collectList");
+    wrap.innerHTML="";
+    if(collectList.length===0){
+        wrap.innerHTML = `<p style="grid-column:1/-1;text-align:center;color:#888;padding:40px;">收藏夹为空，快去收藏喜欢的商品吧！</p>`;
+        return;
+    }
+    collectList.forEach(id=>{
+        const g = goodsData.find(x=>x.id===id);
+        const card = document.createElement('div');
+        card.className = "goods-card";
+        card.onclick = ()=>openDetail(g);
+        card.innerHTML = `
+            <img src="${g.img}" alt="${g.name}" />
+            <div class="goods-info">
+                <div class="goods-name">${g.name}</div>
+                <div class="goods-price">${getPrice(g)}</div>
+                <div class="goods-tag">${g.catName}</div>
+            </div>
+            <div class="hover-tip">
+                <h4>${g.name}</h4>
+                <p>${g.desc}</p>
+                <p style="margin-top:8px;color:#ffe0f0;font-weight:700;">${getPrice(g)}</p>
+            </div>
+        `;
+        wrap.appendChild(card);
+    })
+}
+
+// 订单渲染
+function renderOrders(){
+    const wrap = document.getElementById("orderList");
+    wrap.innerHTML = "";
+    if(orderList.length===0){
+        wrap.innerHTML = "<p>暂无订单，快去下单吧</p>";
+        return;
+    }
+    orderList.forEach(ord=>{
+        wrap.innerHTML += `
+        <div class="order-item">
+            <div><strong>订单号：${ord.orderId}</strong></div>
+            <div>商品：${ord.name}</div>
+            <div>金额：${ord.price}</div>
+            <div>状态：已支付</div>
+            <button class="btn btn-cart" onclick="goLog()">查看物流</button>
+        </div>`;
+    })
+}
+
+// 购物车结算（只取第一件演示）
+function cartToPay(){
+    if(cart.length===0){alert("购物车为空");return;}
+    const first = cart[0];
+    const g = goodsData.find(x=>x.id===first.id);
+    currentGoods = g;
+    document.getElementById('payName').innerText = g.name;
+    document.getElementById('paySku').innerText = g.sku;
+    document.getElementById('payQty').innerText = first.qty;
+    document.getElementById('payPrice').innerText = getPrice(g);
+    switchPage('pay');
+}
+
+// 立即购买（单品直接下单）
+function goPay(){
+    if(!currentGoods) return;
+    document.getElementById('payName').innerText = currentGoods.name;
+    document.getElementById('paySku').innerText = currentGoods.sku;
+    document.getElementById('payQty').innerText = "1";
+    document.getElementById('payPrice').innerText = getPrice(currentGoods);
+    switchPage('pay');
+}
+
+// 选择支付方式
+function selectPay(el){
+    document.querySelectorAll(".pay-item").forEach(item=>item.classList.remove("active"));
+    el.classList.add("active");
+}
+
+// 支付成功，创建订单，跳物流
+function goLog(){
+    const orderId = "39G" + new Date().getTime();
+    orderList.push({
+        orderId:orderId,
+        name:currentGoods.name,
+        price:getPrice(currentGoods)
+    });
+    document.getElementById("logOrderId").innerText = orderId;
+    document.getElementById("logName").innerText = currentGoods.name;
+    alert("模拟支付成功！正在跳转物流页面");
+    switchPage("logistics");
+}
+
+// 币种切换监听
+document.getElementById("currencySelect").onchange = function(){
+    currency = this.value;
+    renderList();
+    if(currentGoods) openDetail(currentGoods);
+    renderCart();
+    renderCollect();
+}
+
+// 语言切换预留（你后续可以扩展中英文/印尼文文本）
+document.getElementById("langSelect").onchange = function(){
+    const lang = this.value;
+    console.log("切换语言：",lang);
+}
+
+// 页面初始化加载
+window.onload = function(){
+    renderList();
+}
+</script>
+</body>
+</html>
